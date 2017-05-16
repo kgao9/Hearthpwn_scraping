@@ -49,24 +49,71 @@ public class HearthPwn {
 		return rows;
 	}
 	
-	public static void writeRow(Elements rowElts)
+	
+	/**
+	 * prints a row from the table.
+	 * @param rowElts a row with all the deck metadata
+	 */
+	public static void writeRow(Elements rowElts, PrintWriter file)
 	{
-		System.out.println(rowElts);
+		//System.out.println(rowElts);
+		
+		String link = "http://www.hearthpwn.com";
+		String deckName = "";
+		String deckType = "";
+		String className = "";
+		String standard = "";
+		
+		for(Element row: rowElts){
+			
+			if(row.className().equals("col-name")){
+				
+				Element deckNameElt = row.children().select("a").first();
+				
+				deckName = deckNameElt.text();
+				link += deckNameElt.attr("href");
+				
+			}
+			
+			if(row.className().equals("col-deck-type")){
+				deckType = row.text();
+				
+				String standardType = row.children().select("span").first().className();
+				
+				if(standardType.equals("is-std"))
+				{
+					standard = "standard";
+				}
+				
+				else
+				{
+					standard = "wild";
+				}
+			}
+			
+			if(row.className().equals("col-class")){
+				className = row.text();
+			}
+			
+			
+		}
+		
+		file.printf("%s,%s,%s,%s,%s\n", deckName, deckType, className, link, standard);
 	}
 	
 	/**
 	 * write every row into file
 	 * @param rows - rows with all deck metadata
 	 */
-	public static void writeRows(Elements rows)
+	public static void writeRows(Elements rows, PrintWriter file)
 	{
+		file.printf("deck_name,deck_type,class,link,standard\n");
 		for(Element row: rows)
 		{
 			if(row.className().equals("even") || row.className().equals("odd"))
 			{
 				Elements eltsInRow = row.children();
-				writeRow(eltsInRow);
-				return;
+				writeRow(eltsInRow, file);
 			}
 		}
 	}
@@ -74,13 +121,17 @@ public class HearthPwn {
 	public static void main(String[] args)throws IOException {
 		// TODO Auto-generated method stub
 
+		PrintWriter file = new PrintWriter("recent_decks.csv");
+		
 		Document doc = getRequest("http://www.hearthpwn.com/decks?filter-deck-tag=2");
 		Element toBody = getTableBody(doc);
 		
 		Elements rows = getRows(toBody);
 
-		writeRows(rows);
+		writeRows(rows, file);
+		
+		file.flush();
+		file.close();
 	}
 
 }
-
