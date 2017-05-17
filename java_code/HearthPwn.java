@@ -70,7 +70,7 @@ public class HearthPwn {
 				
 				Element deckNameElt = row.children().select("a").first();
 				
-				deckName = deckNameElt.text();
+				deckName = "\"" + deckNameElt.text() + "\"";
 				link += deckNameElt.attr("href");
 				
 			}
@@ -99,6 +99,7 @@ public class HearthPwn {
 		}
 		
 		file.printf("%s,%s,%s,%s,%s\n", deckName, deckType, className, link, standard);
+		
 	}
 	
 	/**
@@ -129,6 +130,7 @@ public class HearthPwn {
 		Elements rows = getRows(toBody);
 
 		writeRows(rows, file);
+		
 		
 		file.flush();
 		file.close();
