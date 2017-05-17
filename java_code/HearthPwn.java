@@ -66,7 +66,7 @@ public class HearthPwn {
 		
 		for(Element row: rowElts){
 			
-			if(row.className().equals("col-name")){
+			if(row.className().equals("col-name") || row.className().equals("col-name t-arena-cell")){
 				
 				Element deckNameElt = row.children().select("a").first();
 				
@@ -124,13 +124,21 @@ public class HearthPwn {
 
 		PrintWriter file = new PrintWriter("recent_decks.csv");
 		
-		Document doc = getRequest("http://www.hearthpwn.com/decks?filter-deck-tag=2");
-		Element toBody = getTableBody(doc);
+		System.out.println("<--Starting HearthPwn Scraping-->");
 		
-		Elements rows = getRows(toBody);
+		for(int i = 1; i <= 15; i++){
+			
+			System.out.println("Getting page " + i);
+			
+			Document doc = getRequest("http://www.hearthpwn.com/decks?filter-deck-tag=2&page=" + i);
+			Element toBody = getTableBody(doc);
+		
+			Elements rows = getRows(toBody);
 
-		writeRows(rows, file);
+			writeRows(rows, file);
+		}
 		
+		System.out.println("<--CSV file created secusfully-->");
 		
 		file.flush();
 		file.close();
